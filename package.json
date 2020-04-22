@@ -1,0 +1,32 @@
+{
+  "name": "techarts",
+  "version": "1.0.0",
+  "description": "An out of the box Taro component for ECharts",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elvinzhu/techarts.git"
+  },
+  "keywords": [
+    "taro",
+    "echarts",
+    "可视化",
+    "图表"
+  ],
+  "files": [
+    "demo/src/components/EChart"
+  ],
+  "author": "elvinzhu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/elvinzhu/techarts/issues"
+  },
+  "homepage": "https://github.com/elvinzhu/techarts#readme",
+  "peerDependencies": {
+    "@tarojs/taro": "^2.1.3",
+    "@tarojs/components": "^2.1.3"
+  }
+}
