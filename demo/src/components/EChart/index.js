@@ -10,12 +10,6 @@ export default class EChart extends Component {
     this.state = {
       isUseNewCanvas: false,
     };
-    if (!this.echarts) {
-      console.error(
-        '[EChart]：组件需要echarts对象才能绘图，建议去官网自定义构建。' +
-          '注意不要勾选“代码压缩”，可下载后自行压缩。https://www.echartsjs.com/zh/builder.html'
-      );
-    }
   }
 
   componentDidMount() {
@@ -39,6 +33,7 @@ export default class EChart extends Component {
       <Canvas
         type="2d"
         className="ec-canvas"
+        id={canvasId}
         canvas-id={canvasId}
         style={style}
         onTouchStart={disableTouch ? '' : this._touchStart}
@@ -49,6 +44,14 @@ export default class EChart extends Component {
   }
 
   init = callback => {
+    if (!this.echarts) {
+      console.error(
+        '[EChart]：组件需要echarts对象才能绘图，建议去官网自定义构建。' +
+          '注意不要勾选“代码压缩”，可下载后自行压缩。https://www.echartsjs.com/zh/builder.html'
+      );
+      return;
+    }
+
     const version = Taro.getSystemInfoSync().SDKVersion;
 
     const canUseNewCanvas = compareVersion(version, '2.9.0') >= 0;
