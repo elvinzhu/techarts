@@ -21,9 +21,13 @@ export default class EChart extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.option !== prevProps.option) {
-      if (this.chart) {
-        this.chart.setOption(this.props.option);
-      }
+      this.setOption(this.props.option);
+    }
+  }
+
+  setOption(option) {
+    if (this.chart && option) {
+      this.chart.setOption(option);
     }
   }
 
