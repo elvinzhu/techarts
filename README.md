@@ -67,6 +67,11 @@ onInit = (canvas, width, height, dpr) => {
 
 参照项目 [demo](https://github.com/elvinzhu/techarts/blob/master/demo/src/pages/index/index.jsx) 目录
 
+### 注意事项
+
+- Taro H5本地开发时样式加载延时，导致echarts初始化宽高读取错误。build之后正常
+- `canvasToTempFilePath` h5未实现定制宽高位置等功能
+
 ### License
 
 MIT[@elvinzhu](https://github.com/elvinzhu)
