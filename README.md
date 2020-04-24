@@ -1,6 +1,12 @@
 # techarts
 
-`techarts` 将 [ec-canvas](https://github.com/ecomfe/echarts-for-weixin) 封装成了一个 Taro 组件，简化了 ec-canvas 的使用
+开箱即用的 Taro ECharts 组件，不需要配置任何 "copy". 据有以下特性：
+
+- 支持多种使用方式。
+- 支持自定义构建的echarts
+- 支持导出图片
+
+如果你觉得解决了你的问题，并节省了时间，请在github上给我一个小星星 ^_^
 
 ### 安装
 
