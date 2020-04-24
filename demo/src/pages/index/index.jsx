@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro';
-import { View, Text } from '@tarojs/components';
+import { View, Button, Image } from '@tarojs/components';
 import EChart from '../../components/EChart/index';
 import * as echarts from './echarts';
 
@@ -15,6 +15,7 @@ export default class Index extends Component {
       xData,
       yData,
       option: getOption(xData, yData),
+      exportedImg: '',
     };
   }
 
@@ -31,7 +32,7 @@ export default class Index extends Component {
   }
 
   render() {
-    const { option } = this.state;
+    const { option, exportedImg } = this.state;
     return (
       <View className="page-index">
         <View className="line-chart">
@@ -42,6 +43,8 @@ export default class Index extends Component {
           {/* 通过组件实例设置数据 */}
           <EChart ref={this.setChartRef} echarts={echarts} />
         </View>
+        {exportedImg && <Image mode="widthFix" src={exportedImg}></Image>}
+        <Button onClick={this.exportImg}>导出图片</Button>
         <View className="line-chart">
           {/* 通过组件实例设置数据 */}
           <EChart echarts={echarts} option={option} onInit={this.onInit} />
@@ -49,6 +52,16 @@ export default class Index extends Component {
       </View>
     );
   }
+
+  exportImg = () => {
+    this.chart.canvasToTempFilePath({
+      success: res => {
+        this.setState({
+          exportedImg: res.tempFilePath,
+        });
+      },
+    });
+  };
 
   manualSetOption() {
     const newX = [...xData];

@@ -8,7 +8,8 @@ export default class EChart extends Component {
   constructor(props) {
     super(props);
     this.echarts = props.echarts;
-    this.canvasId = 'techarts__' + INSTANCE_COUNTER++;
+    this.chart = null; // echarts instance
+    this.canvasId = '__techarts__' + INSTANCE_COUNTER++;
     this.state = {
       isUseNewCanvas: false,
     };
@@ -29,13 +30,13 @@ export default class EChart extends Component {
 
   render() {
     const { disableTouch, style } = this.props;
-    const _canvasId = this.getCanvasId();
+    const canvasId = this.getCanvasId();
     return (
       <Canvas
         type="2d"
         className="techarts-canvas"
-        id={_canvasId}
-        canvas-id={_canvasId}
+        id={canvasId}
+        canvasId={canvasId}
         style={style}
         onTouchStart={disableTouch ? '' : this._touchStart}
         onTouchMove={disableTouch ? '' : this._touchMove}
@@ -63,7 +64,17 @@ export default class EChart extends Component {
       return;
     }
 
-    if (process.env.TARO_ENV === 'weapp') {
+    if (process.env.TARO_ENV === 'h5') {
+      const elCanvas = window.document.getElementById(this.getCanvasId());
+      const style = window.getComputedStyle(elCanvas);
+      this._invokeCallback(
+        callback,
+        elCanvas,
+        parseInt(style.width),
+        parseInt(style.height),
+        window.devicePixelRatio
+      );
+    } else {
       const version = Taro.getSystemInfoSync().SDKVersion;
       const canUseNewCanvas = compareVersion(version, '2.9.0') >= 0;
       const forceUseOldCanvas = this.props.forceUseOldCanvas;
@@ -91,16 +102,6 @@ export default class EChart extends Component {
           this._initByOldWay(callback);
         }
       }
-    } else if (process.env.TARO_ENV === 'h5') {
-      const elCanvas = window.document.getElementById(this.getCanvasId());
-      const style = window.getComputedStyle(elCanvas);
-      this._invokeCallback(
-        callback,
-        elCanvas,
-        parseInt(style.width),
-        parseInt(style.height),
-        window.devicePixelRatio
-      );
     }
   };
 
@@ -159,25 +160,31 @@ export default class EChart extends Component {
   }
 
   canvasToTempFilePath(opt) {
-    if (this.state.isUseNewCanvas) {
-      // 新版
-      const query = Taro.createSelectorQuery().in(this.$scope);
-      query
-        .select('.techarts-canvas')
-        .fields({ node: true, size: true })
-        .exec(res => {
-          const canvasNode = res[0].node;
-          opt.canvas = canvasNode;
-          Taro.canvasToTempFilePath(opt);
-        });
+    opt = opt || {};
+    if (!opt.canvasId) {
+      opt.canvasId = this.getCanvasId();
+    }
+    if (process.env.TARO_ENV === 'h5') {
+      canvasToTempFilePath(opt, this);
+      // Taro.canvasToTempFilePath(opt, this);
     } else {
-      // 旧的
-      if (!opt.canvasId) {
-        opt.canvasId = this.getCanvasId();
+      if (this.state.isUseNewCanvas) {
+        // 新版
+        const query = Taro.createSelectorQuery().in(this.$scope);
+        query
+          .select('.techarts-canvas')
+          .fields({ node: true, size: true })
+          .exec(res => {
+            const canvasNode = res[0].node;
+            opt.canvas = canvasNode;
+            Taro.canvasToTempFilePath(opt, this.$scope);
+          });
+      } else {
+        // 旧的
+        this.ctx.draw(true, () => {
+          Taro.canvasToTempFilePath(opt, this.$scope);
+        });
       }
-      this.ctx.draw(true, () => {
-        Taro.canvasToTempFilePath(opt, this);
-      });
     }
   }
 
@@ -280,4 +287,28 @@ function wrapTouch(event) {
     touch.offsetY = touch.y;
   }
   return event;
+}
+
+function canvasToTempFilePath(
+  { canvasId, fileType, quality, success, fail, complete },
+  componentInstance
+) {
+  try {
+    const canvas = componentInstance.vnode.dom.querySelector('canvas');
+    const dataURL = canvas.toDataURL(`image/${fileType || 'png'}`, quality);
+    const res = {
+      tempFilePath: dataURL,
+      res: 'canvasToTempFilePath:ok',
+    };
+    success && success(res);
+    complete && complete();
+    return Promise.resolve(res);
+  } catch (e) {
+    const res = {
+      errMsg: e.message,
+    };
+    fail && fail(res);
+    complete && complete();
+    return Promise.reject(res);
+  }
 }

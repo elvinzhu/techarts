@@ -54,9 +54,18 @@ onInit = (canvas, width, height, dpr) => {
 | style        | 样式                                                                                                                             | -      | N        |
 | onInit       | 需要自定义 echarts init 时使用                                                                                                   | -      | N        |
 
+### 实例 API
+
+| API 名称             | 参数                                                                                                 | 回调参数  |
+| -------------------- | ---------------------------------------------------------------------------------------------------- | --------- |
+| init                 | callback                                                                                             | 同 onInit |
+| setOption            | [echart option](https://echarts.apache.org/zh/option.html#title)                                     | -         |
+| canvasToTempFilePath | 同[小程序](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/wx.canvasToTempFilePath.html) | 同小程序  |
+| getCanvasId          | 获取容器 id                                                                                          | -         |
+
 ### 示例
 
-参照项目 [demo](https://github.com/elvinzhu/techarts/tree/master/demo) 目录
+参照项目 [demo](https://github.com/elvinzhu/techarts/blob/master/demo/src/pages/index/index.jsx) 目录
 
 ### License
 
