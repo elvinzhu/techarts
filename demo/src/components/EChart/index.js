@@ -114,49 +114,53 @@ export default class EChart extends Component {
   }
 
   _initByOldWay(callback) {
-    // 1.9.91 <= version < 2.9.0：原来的方式初始化
-    const canvasId = this.getCanvasId();
-    const ctx = Taro.createCanvasContext(canvasId, this.$scope);
-    this.ctx = ctx;
-    const canvas = new WxCanvas(ctx, canvasId, false);
+    if (process.env.TARO_ENV !== 'h5') {
+      // 1.9.91 <= version < 2.9.0：原来的方式初始化
+      const canvasId = this.getCanvasId();
+      const ctx = Taro.createCanvasContext(canvasId, this.$scope);
+      this.ctx = ctx;
+      const canvas = new WxCanvas(ctx, canvasId, false);
 
-    this.echarts.setCanvasCreator(() => {
-      return canvas;
-    });
-    // const canvasDpr = Taro.getSystemInfoSync().pixelRatio // 微信旧的canvas不能传入dpr
-    const canvasDpr = 1;
-    var query = Taro.createSelectorQuery().in(this.$scope);
-    query
-      .select('.techarts-canvas')
-      .boundingClientRect(res => {
-        this._invokeCallback(callback, canvas, res.width, res.height, canvasDpr);
-      })
-      .exec();
+      this.echarts.setCanvasCreator(() => {
+        return canvas;
+      });
+      // const canvasDpr = Taro.getSystemInfoSync().pixelRatio // 微信旧的canvas不能传入dpr
+      const canvasDpr = 1;
+      var query = Taro.createSelectorQuery().in(this.$scope);
+      query
+        .select('.techarts-canvas')
+        .boundingClientRect(res => {
+          this._invokeCallback(callback, canvas, res.width, res.height, canvasDpr);
+        })
+        .exec();
+    }
   }
 
   _initByNewWay(callback) {
-    // version >= 2.9.0：使用新的方式初始化
-    const canvasId = this.getCanvasId();
-    const query = Taro.createSelectorQuery().in(this.$scope);
-    query
-      .select('.techarts-canvas')
-      .fields({ node: true, size: true })
-      .exec(res => {
-        const canvasNode = res[0].node;
-        this.canvasNode = canvasNode;
+    if (process.env.TARO_ENV !== 'h5') {
+      // version >= 2.9.0：使用新的方式初始化
+      const canvasId = this.getCanvasId();
+      const query = Taro.createSelectorQuery().in(this.$scope);
+      query
+        .select('.techarts-canvas')
+        .fields({ node: true, size: true })
+        .exec(res => {
+          const canvasNode = res[0].node;
+          this.canvasNode = canvasNode;
 
-        const canvasDpr = Taro.getSystemInfoSync().pixelRatio;
-        const canvasWidth = res[0].width;
-        const canvasHeight = res[0].height;
+          const canvasDpr = Taro.getSystemInfoSync().pixelRatio;
+          const canvasWidth = res[0].width;
+          const canvasHeight = res[0].height;
 
-        const ctx = canvasNode.getContext('2d');
+          const ctx = canvasNode.getContext('2d');
 
-        const canvas = new WxCanvas(ctx, canvasId, true, canvasNode);
-        this.echarts.setCanvasCreator(() => {
-          return canvas;
+          const canvas = new WxCanvas(ctx, canvasId, true, canvasNode);
+          this.echarts.setCanvasCreator(() => {
+            return canvas;
+          });
+          this._invokeCallback(callback, canvas, canvasWidth, canvasHeight, canvasDpr);
         });
-        this._invokeCallback(callback, canvas, canvasWidth, canvasHeight, canvasDpr);
-      });
+    }
   }
 
   canvasToTempFilePath(opt) {
