@@ -25,7 +25,7 @@
     "dev:rn": "npm run build:rn -- --watch",
     "dev:qq": "npm run build:qq -- --watch",
     "dev:quickapp": "npm run build:quickapp -- --watch",
-    "build:component": "cross-env TARO_BUILD_TYPE=component taro build --ui"
+    "start": "npm run dev:h5"
   },
   "author": "",
   "license": "MIT",
@@ -45,7 +45,8 @@
     "babel-runtime": "^6.26.0",
     "nerv-devtools": "^1.5.7",
     "nervjs": "^1.5.7",
-    "regenerator-runtime": "0.11.1"
+    "regenerator-runtime": "0.11.1",
+    "techarts": "^1.0.3"
   },
   "devDependencies": {
     "@tarojs/mini-runner": "2.2.7",

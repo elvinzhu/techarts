@@ -1,6 +1,6 @@
 import Taro, { Component } from '@tarojs/taro';
 import { View, Button, Image } from '@tarojs/components';
-import EChart from '../../components/EChart/index';
+import EChart from 'techarts';
 import * as echarts from './echarts';
 
 import './index.less';
