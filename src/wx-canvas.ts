@@ -1,9 +1,14 @@
+import { CanvasContext } from "@tarojs/taro";
+
 export default class WxCanvas {
-  constructor(ctx, canvasId, isNew, canvasNode) {
+  private ctx: CanvasContext;
+  private chart: any;
+  private canvasNode: any;
+  private event: {};
+
+  constructor(ctx: CanvasContext, isNew: boolean, canvasNode?: any) {
     this.ctx = ctx;
-    this.canvasId = canvasId;
     this.chart = null;
-    this.isNew = isNew;
     if (isNew) {
       this.canvasNode = canvasNode;
     } else {
@@ -41,11 +46,11 @@ export default class WxCanvas {
   }
 
   _initCanvas(zrender, ctx) {
-    zrender.util.getContext = function() {
+    zrender.util.getContext = function () {
       return ctx;
     };
 
-    zrender.util.$override('measureText', function(text, font) {
+    zrender.util.$override('measureText', function (text, font) {
       ctx.font = font || '12px sans-serif';
       return ctx.measureText(text);
     });
@@ -80,8 +85,8 @@ export default class WxCanvas {
       });
     });
 
-    ctx.createRadialGradient = () => {
-      return ctx.createCircularGradient(arguments);
+    ctx.createRadialGradient = function () {
+      return ctx.createCircularGradient.apply(ctx, arguments);
     };
   }
 

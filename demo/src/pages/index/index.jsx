@@ -1,14 +1,15 @@
-import Taro, { Component } from '@tarojs/taro';
+import React, { Component } from 'react';
 import { View, Button, Image } from '@tarojs/components';
-import EChart from 'techarts';
 import * as echarts from './echarts';
 
 import './index.less';
+import EChart from 'techarts';
 
 const xData = ['4/1', '4/2', '4/3', '4/4', '4/5', '4/6', '4/7'];
 const yData = ['2', '50', '20', '40', '60', '5', '6'];
 
 export default class Index extends Component {
+  chart = React.createRef();
   constructor(props) {
     super(props);
     this.state = {
@@ -18,14 +19,6 @@ export default class Index extends Component {
       exportedImg: '',
     };
   }
-
-  config = {
-    navigationBarTitleText: '首页',
-  };
-
-  setChartRef = node => {
-    this.chart = node;
-  };
 
   componentDidMount() {
     this.manualSetOption();
@@ -41,7 +34,7 @@ export default class Index extends Component {
         </View>
         <View className="line-chart">
           {/* 通过组件实例设置数据 */}
-          <EChart ref={this.setChartRef} echarts={echarts} />
+          <EChart ref={this.chart} echarts={echarts} />
         </View>
         {exportedImg && <Image mode="widthFix" src={exportedImg}></Image>}
         <Button onClick={this.exportImg}>导出图片</Button>
@@ -54,8 +47,8 @@ export default class Index extends Component {
   }
 
   exportImg = () => {
-    this.chart.canvasToTempFilePath({
-      success: res => {
+    this.chart.current.canvasToTempFilePath({
+      success: (res) => {
         this.setState({
           exportedImg: res.tempFilePath,
         });
@@ -73,7 +66,7 @@ export default class Index extends Component {
       newX.push(`${newDate.getMonth() + 1}/${newDate.getDate()}`);
       newY.shift();
       newY.push((100 * Math.random()).toFixed(2));
-      this.chart.setOption(getOption(newX, newY));
+      this.chart.current.setOption(getOption(newX, newY));
     }, 1000);
   }
 
@@ -85,7 +78,6 @@ export default class Index extends Component {
     });
     canvas.setChart(chart);
     chart.setOption(this.state.option);
-    // this.chart = chart;
     return chart; // 必须return
   };
 }
@@ -120,7 +112,7 @@ function getOption(xData, yData) {
       trigger: 'axis',
       formatter: '{c}',
       backgroundColor: '#1890ff',
-      position: function(point, params, dom, rect, size) {
+      position: function (point, params, dom, rect, size) {
         return [point[0], '10%'];
       },
       axisPointer: {
