@@ -17,9 +17,6 @@ const config = {
   },
   devtool: 'none',
   framework: 'react',
-  alias: {
-    nervjs: 'react',
-  },
   mini: {
     postcss: {
       pxtransform: {

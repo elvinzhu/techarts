@@ -1,59 +1,59 @@
 {
-  "name": "techarts",
-  "version": "2.0.0",
-  "description": "An out of the box Taro component for ECharts",
-  "module": "dist/index.js",
-  "main": "dist/index.cjs.js",
-  "scripts": {
-    "build": "rollup --config ./rollup.config.js",
-    "link": "npm link && cd demo && npm link techarts",
-    "demo": "cd demo && npm start"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/elvinzhu/techarts.git"
-  },
-  "keywords": [
-    "taro",
-    "echarts",
-    "techarts",
-    "图表"
-  ],
-  "files": [
-    "dist"
-  ],
-  "author": "elvinzhu",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/elvinzhu/techarts/issues"
-  },
-  "homepage": "https://github.com/elvinzhu/techarts#readme",
-  "peerDependencies": {
-    "@tarojs/components": ">=3",
-    "@tarojs/react": ">=3",
-    "react": ">=16.13.0",
-    "react-dom": ">=16.13.0"
-  },
-  "devDependencies": {
-    "@rollup/plugin-babel": "^5.1.0",
-    "@rollup/plugin-commonjs": "^11.0.2",
-    "@rollup/plugin-json": "^4.0.2",
-    "@rollup/plugin-node-resolve": "^7.1.1",
-    "@tarojs/components": "~3.0.2",
-    "@tarojs/react": "~3.0.2",
-    "@tarojs/taro": "~3.0.2",
-    "@types/classnames": "^2.2.9",
-    "@types/node": "^13.11.1",
-    "@types/react": "^16.9.23",
-    "@types/react-dom": "^16.9.5",
-    "react": "^16.13.0",
-    "react-dom": "^16.13.0",
-    "rollup": "^2.3.1",
-    "rollup-plugin-copy": "^3.3.0",
-    "rollup-plugin-typescript2": "^0.27.0",
-    "rollup-plugin-visualizer": "^4.0.2",
-    "typescript": "^3.8.3",
-    "@babel/core": "^7.10.5",
-    "@types/babel__core": "^7.1.9"
-  }
+	"name": "techarts",
+	"version": "2.0.0",
+	"description": "An out of the box Taro component for ECharts",
+	"module": "dist/index.js",
+	"main": "dist/index.cjs.js",
+	"scripts": {
+		"build": "rollup --config ./rollup.config.js",
+		"link": "npm link && cd demo && npm link techarts",
+		"demo": "cd demo && npm start"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/elvinzhu/techarts.git"
+	},
+	"keywords": [
+		"taro",
+		"echarts",
+		"techarts",
+		"图表"
+	],
+	"files": [
+		"dist"
+	],
+	"author": "elvinzhu",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/elvinzhu/techarts/issues"
+	},
+	"homepage": "https://github.com/elvinzhu/techarts#readme",
+	"peerDependencies": {
+		"@tarojs/components": ">=3",
+		"@tarojs/react": ">=3",
+		"react": ">=16.13.0",
+		"react-dom": ">=16.13.0"
+	},
+	"devDependencies": {
+		"@rollup/plugin-babel": "^5.1.0",
+		"@rollup/plugin-commonjs": "^11.0.2",
+		"@rollup/plugin-json": "^4.0.2",
+		"@rollup/plugin-node-resolve": "^7.1.1",
+		"@tarojs/components": "3.0.7",
+		"@tarojs/react": "3.0.7",
+		"@tarojs/taro": "3.0.7",
+		"@types/classnames": "^2.2.9",
+		"@types/node": "^13.11.1",
+		"@types/react": "^16.9.23",
+		"@types/react-dom": "^16.9.5",
+		"react": "^16.13.0",
+		"react-dom": "^16.13.0",
+		"rollup": "^2.3.1",
+		"rollup-plugin-copy": "^3.3.0",
+		"rollup-plugin-typescript2": "^0.27.0",
+		"rollup-plugin-visualizer": "^4.0.2",
+		"typescript": "^3.8.3",
+		"@babel/core": "^7.10.5",
+		"@types/babel__core": "^7.1.9"
+	}
 }

@@ -1,4 +1,4 @@
-import Taro from '@tarojs/taro';
+import Taro, { eventCenter, getCurrentInstance } from '@tarojs/taro';
 import React, { Component, CSSProperties } from 'react';
 import { Canvas } from '@tarojs/components';
 import WxCanvas from './wx-canvas';
@@ -60,18 +60,23 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
   componentDidMount() {
     const { lazyLoad } = this.props;
     if (!lazyLoad) {
-      setTimeout(() => {
-        this.init();
-      }, 101)
+      const router = getCurrentInstance().router;
+      if (router) {
+        eventCenter.once(router.onReady, () => {
+          this.init();
+          console.log('onReady..........')
+        })
+      }
     }
   }
 
   render() {
+    console.log('techarts rendering .....');
     const { disableTouch, style } = this.props;
     const canvasId = this.getCanvasId();
     return <Canvas id={canvasId} canvasId={canvasId} type="2d"
       className="techarts-canvas"
-      style={{ width: '100%', height: '100%', ...style }}
+      style={{ width: '100%', height: '100%', display: 'inline-block', ...style }}
       onTouchStart={disableTouch ? undefined : this._touchStart}
       onTouchMove={disableTouch ? undefined : this._touchMove}
       onTouchEnd={disableTouch ? undefined : this._touchEnd}>
@@ -259,22 +264,20 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
 
   private _initChart(canvas: WxCanvas, width: number, height: number, dpr: number) {
     const { onInit } = this.props;
-    if (!canvas.setChart) {
-      canvas.setChart = () => { };
-    }
     if (typeof onInit === 'function') {
       this.chart = onInit(canvas, width, height, dpr);
     } else {
-      const chart = this.echarts.init(canvas, null, {
+      this.chart = this.echarts.init(canvas, null, {
         width: width,
         height: height,
         devicePixelRatio: dpr, // new
       });
-      canvas.setChart(chart);
-      if (this.props.option) {
-        chart.setOption(this.props.option);
-      }
-      this.chart = chart;
+    }
+    if (canvas.setChart) {
+      canvas.setChart(this.chart);
+    }
+    if (this.props.option) {
+      this.chart.setOption(this.props.option);
     }
     return this.chart;
   }
@@ -283,19 +286,18 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
 function compareVersion(v1: string, v2: string) {
   const v1Arr = v1.split('.');
   const v2Arr = v2.split('.');
-  const len = Math.max(v1.length, v2.length);
+  const len = Math.max(v1Arr.length, v2Arr.length);
 
-  while (v1.length < len) {
+  while (v1Arr.length < len) {
     v1Arr.push('0');
   }
-  while (v2.length < len) {
+  while (v2Arr.length < len) {
     v2Arr.push('0');
   }
 
   for (let i = 0; i < len; i++) {
-    const num1 = parseInt(v1[i]);
-    const num2 = parseInt(v2[i]);
-
+    const num1 = parseInt(v1Arr[i]);
+    const num2 = parseInt(v2Arr[i]);
     if (num1 > num2) {
       return 1;
     } else if (num1 < num2) {

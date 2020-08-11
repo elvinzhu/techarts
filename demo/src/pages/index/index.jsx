@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { View, Button, Image } from '@tarojs/components';
 import * as echarts from './echarts';
+import EChart from 'techarts';
 
 import './index.less';
-import EChart from 'techarts';
 
 const xData = ['4/1', '4/2', '4/3', '4/4', '4/5', '4/6', '4/7'];
 const yData = ['2', '50', '20', '40', '60', '5', '6'];
 
+console.log('page index code ....');
 export default class Index extends Component {
   chart = React.createRef();
   constructor(props) {
@@ -21,11 +22,13 @@ export default class Index extends Component {
   }
 
   componentDidMount() {
+    console.log('page mout....');
     this.manualSetOption();
   }
 
   render() {
     const { option, exportedImg } = this.state;
+    console.log('pageindex rendering ....');
     return (
       <View className="page-index">
         <View className="line-chart">
@@ -39,7 +42,7 @@ export default class Index extends Component {
         {exportedImg && <Image mode="widthFix" src={exportedImg}></Image>}
         <Button onClick={this.exportImg}>导出图片</Button>
         <View className="line-chart">
-          {/* 通过组件实例设置数据 */}
+          {/* 通过组件实例设置数据，并自定义echarts的初始化 */}
           <EChart echarts={echarts} option={option} onInit={this.onInit} />
         </View>
       </View>
@@ -76,8 +79,6 @@ export default class Index extends Component {
       height: height,
       devicePixelRatio: dpr, // new
     });
-    canvas.setChart(chart);
-    chart.setOption(this.state.option);
     return chart; // 必须return
   };
 }
