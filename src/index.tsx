@@ -60,18 +60,26 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
   componentDidMount() {
     const { lazyLoad } = this.props;
     if (!lazyLoad) {
-      const router = getCurrentInstance().router;
-      if (router) {
-        eventCenter.once(router.onReady, () => {
-          this.init();
-          console.log('onReady..........')
-        })
+      if (process.env.TARO_ENV === 'weapp') {
+        Taro.nextTick(() => {
+          setTimeout(() => {
+            this.init();
+          }, 0);
+        });
+      } else {
+        const router = getCurrentInstance().router;
+        if (router) {
+          eventCenter.once(router.onReady, () => {
+            setTimeout(() => {
+              this.init();
+            }, 0);
+          });
+        }
       }
     }
   }
 
   render() {
-    console.log('techarts rendering .....');
     const { disableTouch, style } = this.props;
     const canvasId = this.getCanvasId();
     return <Canvas id={canvasId} canvasId={canvasId} type="2d"
@@ -145,7 +153,7 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
 
   private _selectCanvas(): Taro.NodesRef {
     const query = Taro.createSelectorQuery();
-    return query.select('.techarts-canvas')
+    return query.select(`#${this.getCanvasId()}`)
   }
 
   private _initByOldWay(callback?: TCallback) {

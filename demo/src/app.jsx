@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import { Component } from "react";
 
-import './app.less';
+import "./app.less";
 
 class App extends Component {
   componentDidMount() {}
@@ -11,8 +11,7 @@ class App extends Component {
 
   componentDidCatchError() {}
 
-  // 在 App 类中的 render() 函数没有实际作用
-  // 请勿修改此函数
+  // this.props.children 是将要会渲染的页面
   render() {
     return this.props.children;
   }

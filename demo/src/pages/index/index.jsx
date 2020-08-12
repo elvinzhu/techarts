@@ -1,14 +1,13 @@
-import React, { Component } from 'react';
-import { View, Button, Image } from '@tarojs/components';
-import * as echarts from './echarts';
-import EChart from 'techarts';
+import React, { Component } from "react";
+import { View, Button, Image } from "@tarojs/components";
+import EChart from "techarts";
+import * as echarts from "./echarts";
 
-import './index.less';
+import "./index.less";
 
-const xData = ['4/1', '4/2', '4/3', '4/4', '4/5', '4/6', '4/7'];
-const yData = ['2', '50', '20', '40', '60', '5', '6'];
+const xData = ["4/1", "4/2", "4/3", "4/4", "4/5", "4/6", "4/7"];
+const yData = ["2", "50", "20", "40", "60", "5", "6"];
 
-console.log('page index code ....');
 export default class Index extends Component {
   chart = React.createRef();
   constructor(props) {
@@ -17,18 +16,16 @@ export default class Index extends Component {
       xData,
       yData,
       option: getOption(xData, yData),
-      exportedImg: '',
+      exportedImg: ""
     };
   }
 
   componentDidMount() {
-    console.log('page mout....');
     this.manualSetOption();
   }
 
   render() {
     const { option, exportedImg } = this.state;
-    console.log('pageindex rendering ....');
     return (
       <View className="page-index">
         <View className="line-chart">
@@ -40,7 +37,7 @@ export default class Index extends Component {
           <EChart ref={this.chart} echarts={echarts} />
         </View>
         {exportedImg && <Image mode="widthFix" src={exportedImg}></Image>}
-        <Button onClick={this.exportImg}>导出图片</Button>
+        <View onClick={this.exportImg}>导出图片</View>
         <View className="line-chart">
           {/* 通过组件实例设置数据，并自定义echarts的初始化 */}
           <EChart echarts={echarts} option={option} onInit={this.onInit} />
@@ -51,11 +48,11 @@ export default class Index extends Component {
 
   exportImg = () => {
     this.chart.current.canvasToTempFilePath({
-      success: (res) => {
+      success: res => {
         this.setState({
-          exportedImg: res.tempFilePath,
+          exportedImg: res.tempFilePath
         });
-      },
+      }
     });
   };
 
@@ -77,7 +74,7 @@ export default class Index extends Component {
     const chart = echarts.init(canvas, null, {
       width: width,
       height: height,
-      devicePixelRatio: dpr, // new
+      devicePixelRatio: dpr // new
     });
     return chart; // 必须return
   };
@@ -86,13 +83,13 @@ export default class Index extends Component {
 function getOption(xData, yData) {
   return {
     title: {
-      show: false,
+      show: false
       // text: '测试下面legend的红色区域不应被裁剪',
       // left: 'center'
     },
-    color: ['#1890ff'],
+    color: ["#1890ff"],
     legend: {
-      show: false,
+      show: false
       // data: ['A', 'B', 'C'],
       // top: 50,
       // left: 'center',
@@ -105,65 +102,65 @@ function getOption(xData, yData) {
       top: 10,
       left: 2,
       right: 25,
-      bottom: 10,
+      bottom: 10
       // borderColor: '#ff0000'
     },
     tooltip: {
       show: true,
-      trigger: 'axis',
-      formatter: '{c}',
-      backgroundColor: '#1890ff',
-      position: function (point, params, dom, rect, size) {
-        return [point[0], '10%'];
+      trigger: "axis",
+      formatter: "{c}",
+      backgroundColor: "#1890ff",
+      position: function(point, params, dom, rect, size) {
+        return [point[0], "10%"];
       },
       axisPointer: {
         lineStyle: {
-          color: '#D2CCCC',
-        },
-      },
+          color: "#D2CCCC"
+        }
+      }
     },
     xAxis: {
-      type: 'category',
+      type: "category",
       boundaryGap: false,
       axisLine: {
-        show: false,
+        show: false
       },
       axisTick: {
-        show: false,
+        show: false
       },
       axisLabel: {
-        color: '#5E5E5E',
+        color: "#5E5E5E"
       },
-      data: xData,
+      data: xData
       // data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
       // show: false
     },
     yAxis: {
-      x: 'center',
-      type: 'value',
+      x: "center",
+      type: "value",
       axisLine: {
-        show: false,
+        show: false
       },
       axisTick: {
-        show: false,
+        show: false
       },
       axisLabel: {
-        color: '#5E5E5E',
+        color: "#5E5E5E"
       },
       splitLine: {
         lineStyle: {
-          color: '#C2C0C0',
-          type: 'dashed',
-        },
-      },
+          color: "#C2C0C0",
+          type: "dashed"
+        }
+      }
       // show: false
     },
     series: [
       {
-        name: 'A',
-        type: 'line',
+        name: "A",
+        type: "line",
         smooth: true,
-        data: yData,
+        data: yData
         // data: [1800, 360, 65, 30, 780, 40, 33]
       } /*, {
       name: 'B',
@@ -175,7 +172,7 @@ function getOption(xData, yData) {
       type: 'line',
       smooth: true,
       data: [10, 30, 31, 50, 40, 20, 10]
-    }*/,
-    ],
+    }*/
+    ]
   };
 }

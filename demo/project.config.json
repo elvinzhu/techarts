@@ -1,13 +1,20 @@
 {
-	"miniprogramRoot": "dist/",
-	"projectname": "TEcharts-Demo",
-	"description": "tcharts demo",
+	"miniprogramRoot": ".dist",
+	"projectname": "demo",
+	"description": "techarts demo",
 	"appid": "touristappid",
 	"setting": {
 		"urlCheck": true,
 		"es6": false,
 		"postcss": false,
-		"minified": false
+		"preloadBackgroundData": false,
+		"minified": false,
+		"newFeature": true,
+		"autoAudits": false,
+		"coverView": true,
+		"showShadowRootInWxmlPanel": false,
+		"scopeDataCheck": false,
+		"useCompilerModule": false
 	},
 	"compileType": "miniprogram",
 	"simulatorType": "wechat",

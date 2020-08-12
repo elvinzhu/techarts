@@ -35,6 +35,7 @@
 		"react-dom": ">=16.13.0"
 	},
 	"devDependencies": {
+		"@babel/core": "^7.10.5",
 		"@rollup/plugin-babel": "^5.1.0",
 		"@rollup/plugin-commonjs": "^11.0.2",
 		"@rollup/plugin-json": "^4.0.2",
@@ -42,18 +43,17 @@
 		"@tarojs/components": "3.0.7",
 		"@tarojs/react": "3.0.7",
 		"@tarojs/taro": "3.0.7",
+		"@types/babel__core": "^7.1.9",
 		"@types/classnames": "^2.2.9",
 		"@types/node": "^13.11.1",
 		"@types/react": "^16.9.23",
 		"@types/react-dom": "^16.9.5",
 		"react": "^16.13.0",
 		"react-dom": "^16.13.0",
-		"rollup": "^2.3.1",
+		"rollup": "^2.23.1",
 		"rollup-plugin-copy": "^3.3.0",
 		"rollup-plugin-typescript2": "^0.27.0",
 		"rollup-plugin-visualizer": "^4.0.2",
-		"typescript": "^3.8.3",
-		"@babel/core": "^7.10.5",
-		"@types/babel__core": "^7.1.9"
+		"typescript": "^3.8.3"
 	}
 }
