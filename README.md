@@ -1,17 +1,18 @@
 # techarts
 
-开箱即用的 Taro ECharts 组件，不需要配置任何 "copy". 据有以下特性：
+开箱即用的 Taro2 echarts 组件，不需要配置任何 "copy". 据有以下特性：
 
 - 支持多种使用方式。
-- 支持自定义构建的echarts
+- 支持自定义构建的 echarts
 - 支持导出图片
 
-如果你觉得解决了你的问题，并节省了时间，请在github上给我一个小星星 ^_^
+如果你觉得解决了你的问题，并节省了时间，请在 github 上给我一个小星星 ^\_^
 
 ### 安装
 
 ```javascript
-npm install techarts
+// 注意必须要加版本号，因为最新版本兼容了 Taro3 不兼容Taro2
+npm install techarts@^1.0.3
 ```
 
 ### 使用
@@ -75,8 +76,8 @@ onInit = (canvas, width, height, dpr) => {
 
 ### 注意事项
 
-- Taro H5本地开发时样式加载延时，导致echarts初始化宽高读取错误。build之后正常
-- `canvasToTempFilePath` h5未实现定制宽高位置等功能
+- Taro H5 本地开发时样式加载延时，导致 echarts 初始化宽高读取错误。build 之后正常
+- `canvasToTempFilePath` h5 未实现定制宽高位置等功能
 
 ### License
 
