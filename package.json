@@ -1,37 +1,43 @@
 {
-  "name": "techarts",
-  "version": "1.0.3",
-  "description": "An out of the box Taro component for ECharts",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "cross-env TARO_BUILD_TYPE=component taro build --ui",
-    "link": "npm link && cd demo && npm link techarts",
-    "demo": "cd demo && npm start"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/elvinzhu/techarts.git"
-  },
-  "keywords": [
-    "taro",
-    "echarts",
-    "techarts",
-    "图表"
-  ],
-  "files": [
-    "dist"
-  ],
-  "author": "elvinzhu",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/elvinzhu/techarts/issues"
-  },
-  "homepage": "https://github.com/elvinzhu/techarts#readme",
-  "peerDependencies": {
-    "@tarojs/components": "^2.1.3",
-    "@tarojs/taro": "^2.1.3",
-    "@tarojs/taro-h5": "^2.1.3",
-    "nervjs": "^1.5.7"
-  },
-  "devDependencies": {}
+	"name": "techarts",
+	"version": "1.0.5",
+	"description": "An out of the box Taro component for ECharts",
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "cross-env TARO_BUILD_TYPE=component taro build --ui",
+		"link": "npm link && cd demo && npm link techarts",
+		"demo": "cd demo && npm start"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/elvinzhu/techarts.git"
+	},
+	"keywords": [
+		"taro",
+		"echarts",
+		"techarts",
+		"图表"
+	],
+	"files": [
+		"dist"
+	],
+	"author": "elvinzhu",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/elvinzhu/techarts/issues"
+	},
+	"homepage": "https://github.com/elvinzhu/techarts#readme",
+	"peerDependencies": {
+		"@tarojs/components": "^2.1.3",
+		"@tarojs/taro": "^2.1.3",
+		"@tarojs/taro-h5": "^2.1.3",
+		"nervjs": "^1.5.7"
+	},
+	"devDependencies": {
+		"cross-env": "^7.0.2",
+		"@tarojs/components": "^2.1.3",
+		"@tarojs/taro": "^2.1.3",
+		"@tarojs/taro-h5": "^2.1.3",
+		"nervjs": "^1.5.7"
+	}
 }
