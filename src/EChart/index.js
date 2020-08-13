@@ -24,25 +24,20 @@ export default class EChart extends Component {
   componentDidMount() {
     const { lazyLoad } = this.props;
     if (!lazyLoad) {
-      this.init();
+      if (process.env.TARO_ENV === 'weapp') {
+        Taro.nextTick(() => {
+          this.init();
+        });
+      } else {
+        this.init();
+      }
     }
   }
 
   render() {
     const { disableTouch, style } = this.props;
     const canvasId = this.getCanvasId();
-    return (
-      <Canvas
-        type="2d"
-        className="techarts-canvas"
-        id={canvasId}
-        canvasId={canvasId}
-        style={style}
-        onTouchStart={disableTouch ? '' : this._touchStart}
-        onTouchMove={disableTouch ? '' : this._touchMove}
-        onTouchEnd={disableTouch ? '' : this._touchEnd}
-      ></Canvas>
-    );
+    return <Canvas type="2d" className="techarts-canvas" id={canvasId} canvasId={canvasId} style={style} onTouchStart={disableTouch ? '' : this._touchStart} onTouchMove={disableTouch ? '' : this._touchMove} onTouchEnd={disableTouch ? '' : this._touchEnd}></Canvas>;
   }
 
   setOption(option) {
@@ -55,25 +50,16 @@ export default class EChart extends Component {
     return this.props.canvasId || this.canvasId;
   }
 
-  init = callback => {
+  init = (callback) => {
     if (!this.echarts) {
-      console.error(
-        '[EChart]：组件需要echarts对象才能绘图，建议去官网自定义构建。' +
-          '注意不要勾选“代码压缩”，可下载后自行压缩。https://www.echartsjs.com/zh/builder.html'
-      );
+      console.error('[EChart]：组件需要echarts对象才能绘图，建议去官网自定义构建。' + '注意不要勾选“代码压缩”，可下载后自行压缩。https://www.echartsjs.com/zh/builder.html');
       return;
     }
 
     if (process.env.TARO_ENV === 'h5') {
       const elCanvas = window.document.getElementById(this.getCanvasId());
       const style = window.getComputedStyle(elCanvas);
-      this._invokeCallback(
-        callback,
-        elCanvas,
-        parseInt(style.width),
-        parseInt(style.height),
-        window.devicePixelRatio
-      );
+      this._invokeCallback(callback, elCanvas, parseInt(style.width), parseInt(style.height), window.devicePixelRatio);
     } else {
       const version = Taro.getSystemInfoSync().SDKVersion;
       const canUseNewCanvas = compareVersion(version, '2.9.0') >= 0;
@@ -92,11 +78,7 @@ export default class EChart extends Component {
       } else {
         const isValid = compareVersion(version, '1.9.91') >= 0;
         if (!isValid) {
-          console.error(
-            '微信基础库版本过低，需大于等于 1.9.91。' +
-              '参见：https://github.com/ecomfe/echarts-for-weixin' +
-              '#%E5%BE%AE%E4%BF%A1%E7%89%88%E6%9C%AC%E8%A6%81%E6%B1%82'
-          );
+          console.error('微信基础库版本过低，需大于等于 1.9.91。' + '参见：https://github.com/ecomfe/echarts-for-weixin' + '#%E5%BE%AE%E4%BF%A1%E7%89%88%E6%9C%AC%E8%A6%81%E6%B1%82');
         } else {
           console.warn('建议将微信基础库调整大于等于2.9.0版本。升级后绘图将有更好性能');
           this._initByOldWay(callback);
@@ -129,7 +111,7 @@ export default class EChart extends Component {
       var query = Taro.createSelectorQuery().in(this.$scope);
       query
         .select('.techarts-canvas')
-        .boundingClientRect(res => {
+        .boundingClientRect((res) => {
           this._invokeCallback(callback, canvas, res.width, res.height, canvasDpr);
         })
         .exec();
@@ -144,7 +126,7 @@ export default class EChart extends Component {
       query
         .select('.techarts-canvas')
         .fields({ node: true, size: true })
-        .exec(res => {
+        .exec((res) => {
           const canvasNode = res[0].node;
           this.canvasNode = canvasNode;
 
@@ -178,7 +160,7 @@ export default class EChart extends Component {
         query
           .select('.techarts-canvas')
           .fields({ node: true, size: true })
-          .exec(res => {
+          .exec((res) => {
             const canvasNode = res[0].node;
             opt.canvas = canvasNode;
             Taro.canvasToTempFilePath(opt, this.$scope);
@@ -192,7 +174,7 @@ export default class EChart extends Component {
     }
   }
 
-  _touchStart = e => {
+  _touchStart = (e) => {
     if (this.chart && e.touches.length > 0) {
       var touch = e.touches[0];
       var handler = this.chart.getZr().handler;
@@ -208,7 +190,7 @@ export default class EChart extends Component {
     }
   };
 
-  _touchMove = e => {
+  _touchMove = (e) => {
     if (this.chart && e.touches.length > 0) {
       var touch = e.touches[0];
       var handler = this.chart.getZr().handler;
@@ -220,7 +202,7 @@ export default class EChart extends Component {
     }
   };
 
-  _touchEnd = e => {
+  _touchEnd = (e) => {
     if (this.chart) {
       const touch = e.changedTouches ? e.changedTouches[0] : {};
       var handler = this.chart.getZr().handler;
@@ -293,10 +275,7 @@ function wrapTouch(event) {
   return event;
 }
 
-function canvasToTempFilePath(
-  { canvasId, fileType, quality, success, fail, complete },
-  componentInstance
-) {
+function canvasToTempFilePath({ canvasId, fileType, quality, success, fail, complete }, componentInstance) {
   try {
     const canvas = componentInstance.vnode.dom.querySelector('canvas');
     const dataURL = canvas.toDataURL(`image/${fileType || 'png'}`, quality);
