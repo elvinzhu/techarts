@@ -30,6 +30,9 @@ export interface IEChartProps {
    * 使用此函数自定义初始化.
    */
   onInit?: TCallback,
+  /**
+   * 是否强制使用旧版本canvas
+   */
   forceUseOldCanvas?: boolean
 }
 

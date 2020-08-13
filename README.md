@@ -1,6 +1,6 @@
 # techarts
 
-开箱即用的 Taro3（2.0 请参照 master 分支） ECharts 组件，不需要配置任何 "copy". 据有以下特性：
+开箱即用的 Taro3（2.0 请参照 master 分支） echarts 组件. 据有以下特性：
 
 - 支持多种使用方式。
 - 支持自定义构建的 echarts
