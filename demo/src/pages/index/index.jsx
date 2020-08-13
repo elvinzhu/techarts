@@ -37,7 +37,7 @@ export default class Index extends Component {
           <EChart ref={this.chart} echarts={echarts} />
         </View>
         {exportedImg && <Image mode="widthFix" src={exportedImg}></Image>}
-        <View onClick={this.exportImg}>导出图片</View>
+        <Button onClick={this.exportImg}>导出图片</Button>
         <View className="line-chart">
           {/* 通过组件实例设置数据，并自定义echarts的初始化 */}
           <EChart echarts={echarts} option={option} onInit={this.onInit} />

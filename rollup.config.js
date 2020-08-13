@@ -6,7 +6,7 @@ import pkg from './package.json';
 
 const resolveFile = (path) => NodePath.resolve(__dirname, path);
 
-const externalpkgs = ['react', 'react-dom', '@tarojs/components', '@tarojs/runtime', '@tarojs/taro', '@tarojs/react'];
+const externalpkgs = ['react', 'react-dom', '@tarojs/components', '@tarojs/runtime', '@tarojs/taro', '@tarojs/taro-h5', '@tarojs/react'];
 
 export default {
   input: 'src/index.tsx',
@@ -14,11 +14,6 @@ export default {
     {
       file: resolveFile(pkg.main),
       format: 'cjs',
-      sourcemap: false,
-    },
-    {
-      file: resolveFile(pkg.module),
-      format: 'es',
       sourcemap: false,
     },
   ],
@@ -29,9 +24,7 @@ export default {
         moduleDirectory: 'node_modules',
       },
     }),
-    RollupCommonjs({
-      include: /\/node_modules\//,
-    }),
+    RollupCommonjs(),
     RollupTypescript(),
   ],
 };

@@ -1,11 +1,11 @@
 {
 	"name": "techarts",
-	"version": "2.0.0",
-	"description": "An out of the box Taro component for ECharts",
-	"module": "dist/index.js",
-	"main": "dist/index.cjs.js",
+	"version": "3.0.3",
+	"description": "An out of the box Taro3 component for ECharts",
+	"main": "dist/index.js",
+	"typings": "dist/index.d.ts",
 	"scripts": {
-		"build": "rollup --config ./rollup.config.js",
+		"build": "rollup --config ./rollup.config.js && echo 重要：请将 dist/index.js 中的 @tarojs/taro 引用修改为 ./taro ",
 		"link": "npm link && cd demo && npm link techarts",
 		"demo": "cd demo && npm start"
 	},

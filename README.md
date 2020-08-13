@@ -1,6 +1,6 @@
 # techarts
 
-开箱即用的 Taro ECharts 组件，不需要配置任何 "copy". 据有以下特性：
+开箱即用的 Taro3（2.0 请参照 master 分支） ECharts 组件，不需要配置任何 "copy". 据有以下特性：
 
 - 支持多种使用方式。
 - 支持自定义构建的 echarts
@@ -23,14 +23,12 @@ import * as echarts from './echarts';
 
 // 基本用法
 <EChart echarts={echarts} option={option} />;
+
 // 通过组件实例设置数据
-<EChart
-  ref={(node) => {
-    this.chart = node;
-  }}
-  echarts={echarts}
-/>;
-this.chart.setOption({...});
+<EChart ref={this.chart} echarts={echarts} />
+
+this.chart.current.setOption({...});
+
 // 自定义初始化
 <EChart echarts={echarts} onInit={this.onInit} />;
 
@@ -42,6 +40,7 @@ onInit = (canvas, width, height, dpr) => {
   });
   return chart; // 必须return
 };
+
 // 以上三种用法可以结合使用
 ```
 

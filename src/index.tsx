@@ -1,4 +1,4 @@
-import Taro, { eventCenter, getCurrentInstance } from '@tarojs/taro';
+import Taro from '@tarojs/taro';
 import React, { Component, CSSProperties } from 'react';
 import { Canvas } from '@tarojs/components';
 import WxCanvas from './wx-canvas';
@@ -67,14 +67,12 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
           }, 0);
         });
       } else {
-        const router = getCurrentInstance().router;
-        if (router) {
-          eventCenter.once(router.onReady, () => {
-            setTimeout(() => {
-              this.init();
-            }, 0);
-          });
-        }
+        const router = Taro.getCurrentInstance().router;
+        router && Taro.eventCenter.once(router.onReady, () => {
+          setTimeout(() => {
+            this.init();
+          }, 0);
+        });
       }
     }
   }
