@@ -63,19 +63,12 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
   componentDidMount() {
     const { lazyLoad } = this.props;
     if (!lazyLoad) {
-      if (process.env.TARO_ENV === 'weapp') {
-        Taro.nextTick(() => {
-          setTimeout(() => {
-            this.init();
-          }, 0);
-        });
-      } else {
+      const cb = () => { setTimeout(() => { this.init(); }, 0); }
+      if (process.env.TARO_ENV === 'h5') {
         const router = Taro.getCurrentInstance().router;
-        router && Taro.eventCenter.once(router.onReady, () => {
-          setTimeout(() => {
-            this.init();
-          }, 0);
-        });
+        router && Taro.eventCenter.once(router.onReady, cb);
+      } else {
+        Taro.nextTick(cb);
       }
     }
   }

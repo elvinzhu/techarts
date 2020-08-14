@@ -13,7 +13,12 @@ export default {
     {
       file: resolveFile(pkg.main),
       format: 'cjs',
-      sourcemap: false,
+      sourcemap: true,
+    },
+    {
+      file: resolveFile(pkg.module),
+      format: 'es',
+      sourcemap: true,
     },
   ],
   external: externalpkgs,
