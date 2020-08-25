@@ -1,4 +1,4 @@
-# techarts
+# techarts [![Build Status](https://travis-ci.org/elvinzhu/techarts.svg?branch=taro3)](https://travis-ci.org/elvinzhu/techarts)
 
 开箱即用的 Taro3（2.0 请参照 master 分支） echarts 组件. 据有以下特性：
 
