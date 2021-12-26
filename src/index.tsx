@@ -1,9 +1,11 @@
 import Taro from '@tarojs/taro';
-import React, { Component, CSSProperties } from 'react';
+import { EChartsOption } from "echarts";
+import { Component, CSSProperties } from 'react';
 import { Canvas } from '@tarojs/components';
 import WxCanvas from './wx-canvas';
 
 export type TCallback = (canvas: any, width: number, height: number, dpr: number) => {}
+
 export interface IEChartProps {
   /**
    * echarts对象. 推荐官网自定义构建echarts对象.
@@ -12,7 +14,7 @@ export interface IEChartProps {
   /**
    * 图表配置. 结构同echarts参数.
    */
-  option: {},
+  option: EChartsOption,
   /**
    * 小程序canvasId. 默认自动生成.
    */
@@ -33,7 +35,9 @@ export interface IEChartProps {
   /**
    * 是否强制使用旧版本canvas
    */
-  forceUseOldCanvas?: boolean
+  forceUseOldCanvas?: boolean,
+  rotated?: boolean,
+  clickChartFun?: (data: object, type: string, isSelect: boolean) => void
 }
 
 export default class EChart extends Component<IEChartProps, { isUseNewCanvas: boolean }> {
@@ -63,13 +67,19 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
   componentDidMount() {
     const { lazyLoad } = this.props;
     if (!lazyLoad) {
-      const cb = () => { setTimeout(() => { this.init(); }, 0); }
-      if (process.env.TARO_ENV === 'h5') {
-        const router = Taro.getCurrentInstance().router;
-        router && Taro.eventCenter.once(router.onReady, cb);
-      } else {
-        Taro.nextTick(cb);
+      const cb = () => {
+        setTimeout(() => {
+          this.init();
+        }, 0);
       }
+      Taro.nextTick(cb);
+      //  页面渲染完了后，就不会在渲染了，init不会执行
+      // if (process.env.TARO_ENV === 'h5') {
+      //   const router = Taro.getCurrentInstance().router;
+      //   router && Taro.eventCenter.once(router.onReady, cb);
+      // } else {
+      //   Taro.nextTick(cb);
+      // }
     }
   }
 
@@ -224,15 +234,22 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
     if (this.chart && e.touches.length > 0) {
       var touch = e.touches[0];
       var handler = this.chart.getZr().handler;
+      const {rotated} = this.props
+      const {x, y} = touch;
+      let zrX = x, zrY = y;
+      if (rotated) {
+        zrX = y;
+        zrY = x
+      }
       handler.dispatch('mousedown', {
-        zrX: touch.x,
-        zrY: touch.y,
+        zrX,
+        zrY
       });
       handler.dispatch('mousemove', {
-        zrX: touch.x,
-        zrY: touch.y,
+        zrX,
+        zrY
       });
-      handler.processGesture(wrapTouch(e), 'start');
+      handler.processGesture(wrapTouch(e, rotated), 'start');
     }
   };
 
@@ -240,11 +257,18 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
     if (this.chart && e.touches.length > 0) {
       var touch = e.touches[0];
       var handler = this.chart.getZr().handler;
+      const {rotated} = this.props
+      const {x, y} = touch;
+      let zrX = x, zrY = y;
+      if (rotated) {
+        zrX = y;
+        zrY = x
+      }
       handler.dispatch('mousemove', {
-        zrX: touch.x,
-        zrY: touch.y,
+        zrX,
+        zrY
       });
-      handler.processGesture(wrapTouch(e), 'change');
+      handler.processGesture(wrapTouch(e, rotated), 'change');
     }
   };
 
@@ -252,35 +276,88 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
     if (this.chart) {
       const touch = e.changedTouches ? e.changedTouches[0] : {};
       var handler = this.chart.getZr().handler;
+      const {rotated} = this.props
+      const {x, y} = touch;
+      let zrX = x, zrY = y;
+      if (rotated) {
+        zrX = y;
+        zrY = x
+      }
       handler.dispatch('mouseup', {
-        zrX: touch.x,
-        zrY: touch.y,
+        zrX,
+        zrY
       });
       handler.dispatch('click', {
-        zrX: touch.x,
-        zrY: touch.y,
+        zrX,
+        zrY
       });
-      handler.processGesture(wrapTouch(e), 'end');
+      handler.processGesture(wrapTouch(e, rotated), 'end');
     }
   };
 
   private _initChart(canvas: WxCanvas, width: number, height: number, dpr: number) {
-    const { onInit } = this.props;
+    const {onInit, rotated, option, clickChartFun} = this.props;
     if (typeof onInit === 'function') {
       this.chart = onInit(canvas, width, height, dpr);
     } else {
-      this.chart = this.echarts.init(canvas, null, {
-        width: width,
-        height: height,
-        devicePixelRatio: dpr, // new
-      });
+      if (rotated) {
+        this.chart = this.echarts.init(canvas, null, {
+          width: height,
+          height: width,
+          devicePixelRatio: dpr, // new
+        });
+      } else {
+        this.chart = this.echarts.init(canvas, null, {
+          width: width,
+          height: height,
+          devicePixelRatio: dpr, // new
+        });
+      }
+
     }
     if (canvas.setChart) {
       canvas.setChart(this.chart);
     }
-    if (this.props.option) {
-      this.chart.setOption(this.props.option);
+    if (option) {
+      this.chart.setOption(option);
     }
+    // debugger
+    if (clickChartFun) {
+      console.log('clickChartFun  bind')
+      this.chart.on('click', (params) => {
+        console.log(params)
+        // clickChartFun(params, 'clickChart', false)
+      })
+      this.chart.on('selectchanged', (params) => {
+        // console.log(params)
+        const {series} = option
+        const selected = params.fromActionPayload
+        const {dataIndexInside, seriesIndex} = selected
+        const serial = series[seriesIndex]
+        // const dataNum = dataIndex[0]
+        const data = serial.data[dataIndexInside]
+        // debugger
+        clickChartFun(data, 'selectChanged', false)
+      })
+      /*
+      const chart = this.chart
+      chart.getZr().on('click', (params) => {
+        debugger
+        let pointInPixel = [params.offsetX, params.offsetY];
+        if (chart.containPixel('grid', pointInPixel)) {
+          let pointInGrid = chart.convertFromPixel({
+            seriesIndex: 0
+          }, pointInPixel);
+          let xIndex = pointInGrid[0]; //索引
+          let handleIndex = Number(xIndex);
+          let seriesObj = chart.getOption(); //图表object对象
+          console.log(handleIndex, seriesObj);
+        }
+      })*/
+
+    }
+
+
     return this.chart;
   }
 }
@@ -312,15 +389,30 @@ function compareVersion(v1: string, v2: string) {
 function wrapTouch(event) {
   for (let i = 0; i < event.touches.length; ++i) {
     const touch = event.touches[i];
-    touch.offsetX = touch.x;
-    touch.offsetY = touch.y;
+    if (rotated) {
+      touch.offsetX = touch.y;
+      touch.offsetY = touch.x;
+    } else {
+      touch.offsetX = touch.x;
+      touch.offsetY = touch.y;
+    }
+
   }
   return event;
 }
 
-function canvasToTempFilePath({ canvasId, fileType, quality, success, fail, complete }: Taro.canvasToTempFilePath.Option) {
+function canvasToTempFilePath(
+  {
+    canvasId,
+    fileType,
+    quality,
+    success,
+    fail,
+    complete
+  }: Taro.canvasToTempFilePath.Option) {
   try {
     const canvas = (document.getElementById(canvasId) as HTMLElement).querySelector('canvas') as HTMLCanvasElement;
+    canvas.removeAttribute && canvas.removeAttribute('_echarts_instance_');
     const dataURL = canvas.toDataURL(`image/${fileType || 'png'}`, quality);
     const res = {
       tempFilePath: dataURL,

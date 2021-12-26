@@ -55,6 +55,8 @@ onInit = (canvas, width, height, dpr) => {
 | lazyLoad     | 需要拿到组件实例手动 init 的时候请传递 true                                                                                      | false  | N        |
 | style        | 样式                                                                                                                             | -      | N        |
 | onInit       | 需要自定义 echarts init 时使用                                                                                                   | -      | N        |
+| rotated      | transform 选择90°后,如旋转后全屏全屏                                                                                       | -      | N        |
+| clickChartFun | 图表点击后动画                                                                               | -      | N        |
 
 ### 实例 API
 
@@ -73,6 +75,12 @@ onInit = (canvas, width, height, dpr) => {
 
 - Taro H5 本地开发时样式加载延时，导致 echarts 初始化宽高读取错误。build 之后正常
 - `canvasToTempFilePath` h5 未实现定制宽高位置等功能
+
+### 图表全屏
+小程序基础库2.4.0之后可以在json文件中配置pageOrientation来实现小程序的横屏，然后不用修改其他配置直接正常加载图表。这样就不会出现上述问题。
+如果是选择直接使用 transform 选择后的全屏
+如果通过旋转echarts组件的方式来实现，则会出现touch事件的坐标轴交换的问题。
+如果通过交换x轴y轴来实现，则会出现toolbox组件和legend组件无法旋转的问题
 
 ### License
 
