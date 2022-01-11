@@ -74,9 +74,9 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
   }
 
   render() {
-    const { disableTouch, style } = this.props;
+    const { disableTouch, style ,forceUseOldCanvas} = this.props;
     const canvasId = this.getCanvasId();
-    return <Canvas id={canvasId} canvasId={canvasId} type="2d"
+    return <Canvas id={canvasId} canvasId={canvasId} type={forceUseOldCanvas ? undefined : '2d'}
       className="techarts-canvas"
       style={{ width: '100%', height: '100%', display: 'inline-block', ...style }}
       onTouchStart={disableTouch ? undefined : this._touchStart}
