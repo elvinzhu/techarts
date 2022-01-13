@@ -1,9 +1,10 @@
 import Taro from '@tarojs/taro';
-import React, { Component, CSSProperties } from 'react';
-import { Canvas } from '@tarojs/components';
+import React, {Component, CSSProperties} from 'react';
+import {Canvas} from '@tarojs/components';
 import WxCanvas from './wx-canvas';
 
 export type TCallback = (canvas: any, width: number, height: number, dpr: number) => {}
+
 export interface IEChartProps {
   /**
    * echarts对象. 推荐官网自定义构建echarts对象.
@@ -61,9 +62,13 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
   }
 
   componentDidMount() {
-    const { lazyLoad } = this.props;
+    const {lazyLoad} = this.props;
     if (!lazyLoad) {
-      const cb = () => { setTimeout(() => { this.init(); }, 0); }
+      const cb = () => {
+        setTimeout(() => {
+          this.init();
+        }, 0);
+      }
       if (process.env.TARO_ENV === 'h5') {
         const router = Taro.getCurrentInstance().router;
         router && Taro.eventCenter.once(router.onReady, cb);
@@ -74,14 +79,14 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
   }
 
   render() {
-    const { disableTouch, style ,forceUseOldCanvas} = this.props;
+    const {disableTouch, style, forceUseOldCanvas} = this.props;
     const canvasId = this.getCanvasId();
     return <Canvas id={canvasId} canvasId={canvasId} type={forceUseOldCanvas ? undefined : '2d'}
-      className="techarts-canvas"
-      style={{ width: '100%', height: '100%', display: 'inline-block', ...style }}
-      onTouchStart={disableTouch ? undefined : this._touchStart}
-      onTouchMove={disableTouch ? undefined : this._touchMove}
-      onTouchEnd={disableTouch ? undefined : this._touchEnd}>
+                   className="techarts-canvas"
+                   style={{width: '100%', height: '100%', display: 'inline-block', ...style}}
+                   onTouchStart={disableTouch ? undefined : this._touchStart}
+                   onTouchMove={disableTouch ? undefined : this._touchMove}
+                   onTouchEnd={disableTouch ? undefined : this._touchEnd}>
     </Canvas>;
   }
 
@@ -113,7 +118,7 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
       const canUseNewCanvas = compareVersion(version, '2.9.0') >= 0;
       const forceUseOldCanvas = this.props.forceUseOldCanvas;
       const isUseNewCanvas = canUseNewCanvas && !forceUseOldCanvas;
-      this.setState({ isUseNewCanvas });
+      this.setState({isUseNewCanvas});
 
       if (forceUseOldCanvas && canUseNewCanvas) {
         console.warn('开发者强制使用旧canvas,建议关闭');
@@ -161,8 +166,11 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
       this.echarts.setCanvasCreator(() => {
         return canvas;
       });
-      // const canvasDpr = Taro.getSystemInfoSync().pixelRatio // 微信旧的canvas不能传入dpr
-      const canvasDpr = 1;
+      // pc微信小程序传入pixelRatio才能正常显示，开发者工具canvasDpr=1
+      let {pixelRatio: canvasDpr, platform} = Taro.getSystemInfoSync().pixelRatio
+      if (platform === "devtools") {
+        canvasDpr = 1;
+      }
       this._selectCanvas()
         .boundingClientRect((res) => {
           this._invokeCallback(canvas, res.width, res.height, canvasDpr, callback);
@@ -175,7 +183,7 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
     if (process.env.TARO_ENV !== 'h5') {
       // version >= 2.9.0：使用新的方式初始化
       this._selectCanvas()
-        .fields({ node: true, size: true })
+        .fields({node: true, size: true})
         .exec((res) => {
           const canvasNode = res[0].node;
           const canvasDpr = Taro.getSystemInfoSync().pixelRatio;
@@ -205,7 +213,7 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
       if (this.state.isUseNewCanvas) {
         // 新版
         this._selectCanvas()
-          .fields({ node: true, size: true })
+          .fields({node: true, size: true})
           .exec((res) => {
             const canvasNode = res[0].node;
             option.canvas = canvasNode;
@@ -265,7 +273,7 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
   };
 
   private _initChart(canvas: WxCanvas, width: number, height: number, dpr: number) {
-    const { onInit } = this.props;
+    const {onInit} = this.props;
     if (typeof onInit === 'function') {
       this.chart = onInit(canvas, width, height, dpr);
     } else {
@@ -318,7 +326,14 @@ function wrapTouch(event) {
   return event;
 }
 
-function canvasToTempFilePath({ canvasId, fileType, quality, success, fail, complete }: Taro.canvasToTempFilePath.Option) {
+function canvasToTempFilePath({
+                                canvasId,
+                                fileType,
+                                quality,
+                                success,
+                                fail,
+                                complete
+                              }: Taro.canvasToTempFilePath.Option) {
   try {
     const canvas = (document.getElementById(canvasId) as HTMLElement).querySelector('canvas') as HTMLCanvasElement;
     const dataURL = canvas.toDataURL(`image/${fileType || 'png'}`, quality);
