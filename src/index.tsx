@@ -167,7 +167,7 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
         return canvas;
       });
       // pc微信小程序传入pixelRatio才能正常显示，开发者工具canvasDpr=1
-      let {pixelRatio: canvasDpr, platform} = Taro.getSystemInfoSync().pixelRatio
+      let {pixelRatio: canvasDpr, platform} = Taro.getSystemInfoSync()
       if (platform === "devtools") {
         canvasDpr = 1;
       }
