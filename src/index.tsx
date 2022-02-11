@@ -1,19 +1,19 @@
 import Taro from '@tarojs/taro';
-import React, {Component, CSSProperties} from 'react';
-import {Canvas} from '@tarojs/components';
+import React, { Component, CSSProperties } from 'react';
+import { Canvas } from '@tarojs/components';
 import WxCanvas from './wx-canvas';
 
-export type TCallback = (canvas: any, width: number, height: number, dpr: number) => {}
+export type TCallback = (canvas: any, width: number, height: number, dpr: number) => {};
 
 export interface IEChartProps {
   /**
    * echarts对象. 推荐官网自定义构建echarts对象.
    */
-  echarts: {},
+  echarts: {};
   /**
    * 图表配置. 结构同echarts参数.
    */
-  option: {},
+  option: {};
   /**
    * 小程序canvasId. 默认自动生成.
    */
@@ -21,24 +21,23 @@ export interface IEChartProps {
   /**
    * 禁用图表手势操作.
    */
-  disableTouch?: boolean,
-  style?: CSSProperties,
+  disableTouch?: boolean;
+  style?: CSSProperties;
   /**
    * 懒实例化。当需要自定义实例化的时候，请传递 true.
    */
-  lazyLoad?: boolean,
+  lazyLoad?: boolean;
   /**
    * 使用此函数自定义初始化.
    */
-  onInit?: TCallback,
+  onInit?: TCallback;
   /**
    * 是否强制使用旧版本canvas
    */
-  forceUseOldCanvas?: boolean
+  forceUseOldCanvas?: boolean;
 }
 
 export default class EChart extends Component<IEChartProps, { isUseNewCanvas: boolean }> {
-
   private static INSTANCE_COUNTER = 0;
   private echarts: any;
   private chart: any;
@@ -62,13 +61,13 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
   }
 
   componentDidMount() {
-    const {lazyLoad} = this.props;
+    const { lazyLoad } = this.props;
     if (!lazyLoad) {
       const cb = () => {
         setTimeout(() => {
           this.init();
         }, 0);
-      }
+      };
       if (process.env.TARO_ENV === 'h5') {
         const router = Taro.getCurrentInstance().router;
         router && Taro.eventCenter.once(router.onReady, cb);
@@ -79,15 +78,20 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
   }
 
   render() {
-    const {disableTouch, style, forceUseOldCanvas} = this.props;
+    const { disableTouch, style, forceUseOldCanvas } = this.props;
     const canvasId = this.getCanvasId();
-    return <Canvas id={canvasId} canvasId={canvasId} type={forceUseOldCanvas ? undefined : '2d'}
-                   className="techarts-canvas"
-                   style={{width: '100%', height: '100%', display: 'inline-block', ...style}}
-                   onTouchStart={disableTouch ? undefined : this._touchStart}
-                   onTouchMove={disableTouch ? undefined : this._touchMove}
-                   onTouchEnd={disableTouch ? undefined : this._touchEnd}>
-    </Canvas>;
+    return (
+      <Canvas
+        id={canvasId}
+        canvasId={canvasId}
+        type={forceUseOldCanvas ? undefined : '2d'}
+        className="techarts-canvas"
+        style={{ width: '100%', height: '100%', display: 'inline-block', ...style }}
+        onTouchStart={disableTouch ? undefined : this._touchStart}
+        onTouchMove={disableTouch ? undefined : this._touchMove}
+        onTouchEnd={disableTouch ? undefined : this._touchEnd}
+      ></Canvas>
+    );
   }
 
   setOption(option: {}) {
@@ -102,8 +106,7 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
 
   init(callback?: TCallback) {
     if (!this.echarts) {
-      console.error('[EChart]：组件需要echarts对象才能绘图，建议去官网自定义构建。'
-        + '注意不要勾选“代码压缩”，可下载后自行压缩。https://www.echartsjs.com/zh/builder.html');
+      console.error('[EChart]：组件需要echarts对象才能绘图，建议去官网自定义构建。' + '注意不要勾选“代码压缩”，可下载后自行压缩。https://www.echartsjs.com/zh/builder.html');
       return;
     }
 
@@ -118,7 +121,7 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
       const canUseNewCanvas = compareVersion(version, '2.9.0') >= 0;
       const forceUseOldCanvas = this.props.forceUseOldCanvas;
       const isUseNewCanvas = canUseNewCanvas && !forceUseOldCanvas;
-      this.setState({isUseNewCanvas});
+      this.setState({ isUseNewCanvas });
 
       if (forceUseOldCanvas && canUseNewCanvas) {
         console.warn('开发者强制使用旧canvas,建议关闭');
@@ -131,16 +134,14 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
       } else {
         const isValid = compareVersion(version, '1.9.91') >= 0;
         if (!isValid) {
-          console.error('微信基础库版本过低，需大于等于 1.9.91。'
-            + '参见：https://github.com/ecomfe/echarts-for-weixin'
-            + '#%E5%BE%AE%E4%BF%A1%E7%89%88%E6%9C%AC%E8%A6%81%E6%B1%82');
+          console.error('微信基础库版本过低，需大于等于 1.9.91。' + '参见：https://github.com/ecomfe/echarts-for-weixin' + '#%E5%BE%AE%E4%BF%A1%E7%89%88%E6%9C%AC%E8%A6%81%E6%B1%82');
         } else {
           console.warn('建议将微信基础库调整大于等于2.9.0版本。升级后绘图将有更好性能');
           this._initByOldWay(callback);
         }
       }
     }
-  };
+  }
 
   private _invokeCallback(canvas: any, canvasWidth: number, canvasHeight: number, canvasDpr: number, callback?: TCallback) {
     if (typeof callback === 'function') {
@@ -152,7 +153,7 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
 
   private _selectCanvas(): Taro.NodesRef {
     const query = Taro.createSelectorQuery();
-    return query.select(`#${this.getCanvasId()}`)
+    return query.select(`#${this.getCanvasId()}`);
   }
 
   private _initByOldWay(callback?: TCallback) {
@@ -167,12 +168,12 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
         return canvas;
       });
       // pc微信小程序传入pixelRatio才能正常显示，开发者工具canvasDpr=1
-      let {pixelRatio: canvasDpr, platform} = Taro.getSystemInfoSync()
-      if (platform === "devtools") {
+      let { pixelRatio: canvasDpr, platform } = Taro.getSystemInfoSync();
+      if (platform === 'devtools') {
         canvasDpr = 1;
       }
       this._selectCanvas()
-        .boundingClientRect((res) => {
+        .boundingClientRect(res => {
           this._invokeCallback(canvas, res.width, res.height, canvasDpr, callback);
         })
         .exec();
@@ -183,8 +184,8 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
     if (process.env.TARO_ENV !== 'h5') {
       // version >= 2.9.0：使用新的方式初始化
       this._selectCanvas()
-        .fields({node: true, size: true})
-        .exec((res) => {
+        .fields({ node: true, size: true })
+        .exec(res => {
           const canvasNode = res[0].node;
           const canvasDpr = Taro.getSystemInfoSync().pixelRatio;
           const canvasWidth = res[0].width;
@@ -213,8 +214,8 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
       if (this.state.isUseNewCanvas) {
         // 新版
         this._selectCanvas()
-          .fields({node: true, size: true})
-          .exec((res) => {
+          .fields({ node: true, size: true })
+          .exec(res => {
             const canvasNode = res[0].node;
             option.canvas = canvasNode;
             Taro.canvasToTempFilePath(option as Taro.canvasToTempFilePath.Option);
@@ -228,7 +229,7 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
     }
   }
 
-  private _touchStart = (e) => {
+  private _touchStart = e => {
     if (this.chart && e.touches.length > 0) {
       var touch = e.touches[0];
       var handler = this.chart.getZr().handler;
@@ -244,7 +245,7 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
     }
   };
 
-  private _touchMove = (e) => {
+  private _touchMove = e => {
     if (this.chart && e.touches.length > 0) {
       var touch = e.touches[0];
       var handler = this.chart.getZr().handler;
@@ -256,7 +257,7 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
     }
   };
 
-  private _touchEnd = (e) => {
+  private _touchEnd = e => {
     if (this.chart) {
       const touch = e.changedTouches ? e.changedTouches[0] : {};
       var handler = this.chart.getZr().handler;
@@ -273,7 +274,7 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
   };
 
   private _initChart(canvas: WxCanvas, width: number, height: number, dpr: number) {
-    const {onInit} = this.props;
+    const { onInit } = this.props;
     if (typeof onInit === 'function') {
       this.chart = onInit(canvas, width, height, dpr);
     } else {
@@ -326,14 +327,7 @@ function wrapTouch(event) {
   return event;
 }
 
-function canvasToTempFilePath({
-                                canvasId,
-                                fileType,
-                                quality,
-                                success,
-                                fail,
-                                complete
-                              }: Taro.canvasToTempFilePath.Option) {
+function canvasToTempFilePath({ canvasId, fileType, quality, success, fail, complete }: Taro.canvasToTempFilePath.Option) {
   try {
     const canvas = (document.getElementById(canvasId) as HTMLElement).querySelector('canvas') as HTMLCanvasElement;
     const dataURL = canvas.toDataURL(`image/${fileType || 'png'}`, quality);
