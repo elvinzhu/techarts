@@ -12,7 +12,7 @@
 
 ```javascript
 // 注意必须要加版本号，因为最新版本兼容了 Taro3 不兼容Taro2
-npm install techarts@^1.0.5
+npm install techarts@^1.0.6
 ```
 
 ## 使用
