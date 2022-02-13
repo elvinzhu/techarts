@@ -1,5 +1,5 @@
 import Taro from '@tarojs/taro';
-import React, { Component, CSSProperties } from 'react';
+import React, { CSSProperties } from 'react';
 import { Canvas } from '@tarojs/components';
 import WxCanvas from './wx-canvas';
 
@@ -9,11 +9,11 @@ export interface IEChartProps {
   /**
    * echarts对象. 推荐官网自定义构建echarts对象.
    */
-  echarts: {};
+  echarts: any;
   /**
    * 图表配置. 结构同echarts参数.
    */
-  option: {};
+  option: any;
   /**
    * 小程序canvasId. 默认自动生成.
    */
@@ -37,7 +37,11 @@ export interface IEChartProps {
   forceUseOldCanvas?: boolean;
 }
 
-export default class EChart extends Component<IEChartProps, { isUseNewCanvas: boolean }> {
+interface IState {
+  isUseNewCanvas: boolean;
+}
+
+export default class EChart extends React.Component<IEChartProps, { isUseNewCanvas: boolean }> {
   private static INSTANCE_COUNTER = 0;
   private echarts: any;
   private chart: any;
@@ -49,10 +53,11 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
     this.echarts = props.echarts;
     this.chart = null; // echarts instance
     this.canvasId = '__techarts__' + EChart.INSTANCE_COUNTER++;
-    this.state = {
-      isUseNewCanvas: false,
-    };
   }
+
+  state: IState = {
+    isUseNewCanvas: false,
+  };
 
   componentDidUpdate(prevProps: IEChartProps) {
     if (this.props.option !== prevProps.option) {
@@ -274,7 +279,7 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
   };
 
   private _initChart(canvas: WxCanvas, width: number, height: number, dpr: number) {
-    const { onInit } = this.props;
+    const { onInit, option } = this.props;
     if (typeof onInit === 'function') {
       this.chart = onInit(canvas, width, height, dpr);
     } else {
@@ -287,8 +292,8 @@ export default class EChart extends Component<IEChartProps, { isUseNewCanvas: bo
     if (canvas.setChart) {
       canvas.setChart(this.chart);
     }
-    if (this.props.option) {
-      this.chart.setOption(this.props.option);
+    if (option) {
+      this.chart.setOption(option);
     }
     return this.chart;
   }
@@ -329,7 +334,7 @@ function wrapTouch(event) {
 
 function canvasToTempFilePath({ canvasId, fileType, quality, success, fail, complete }: Taro.canvasToTempFilePath.Option) {
   try {
-    const canvas = (document.getElementById(canvasId) as HTMLElement).querySelector('canvas') as HTMLCanvasElement;
+    const canvas = (document.getElementById(canvasId as string) as HTMLElement).querySelector('canvas') as HTMLCanvasElement;
     const dataURL = canvas.toDataURL(`image/${fileType || 'png'}`, quality);
     const res = {
       tempFilePath: dataURL,

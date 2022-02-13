@@ -8,13 +8,13 @@
 
 如果你觉得解决了你的问题，并节省了时间，请在 github 上给我一个小星星 ^\_^
 
-### 安装
+## 安装
 
 ```javascript
 npm install techarts
 ```
 
-### 使用
+## 使用
 
 ```jsx
 import EChart from 'techarts';
@@ -38,6 +38,8 @@ onInit = (canvas, width, height, dpr) => {
     height: height,
     devicePixelRatio: dpr,
   });
+  // chart.on('click', e => {})
+  // chat.on('selectchanged', e => {})
   return chart; // 必须return
 };
 
@@ -54,9 +56,9 @@ onInit = (canvas, width, height, dpr) => {
 | disableTouch | 是否禁用手势                                                                                                                     | false  | N        |
 | lazyLoad     | 需要拿到组件实例手动 init 的时候请传递 true                                                                                      | false  | N        |
 | style        | 样式                                                                                                                             | -      | N        |
-| onInit       | 需要自定义 echarts init 时使用                                                                                                   | -      | N        |
+| onInit       | 需要自定义 echarts init 时使(可用此方式给 echarts 绑定事件)用                                                                    | -      | N        |
 
-### 实例 API
+## 实例 API
 
 | API 名称             | 参数                                                                                                 | 回调参数  |
 | -------------------- | ---------------------------------------------------------------------------------------------------- | --------- |
@@ -65,15 +67,15 @@ onInit = (canvas, width, height, dpr) => {
 | canvasToTempFilePath | 同[小程序](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/wx.canvasToTempFilePath.html) | 同小程序  |
 | getCanvasId          | 获取容器 id                                                                                          | -         |
 
-### 示例
+## 示例
 
 参照项目 [demo](https://github.com/elvinzhu/techarts/blob/master/demo/src/pages/index/index.jsx) 目录
 
-### 注意事项
+## 注意事项
 
 - Taro H5 本地开发时样式加载延时，导致 echarts 初始化宽高读取错误。build 之后正常
 - `canvasToTempFilePath` h5 未实现定制宽高位置等功能
 
-### License
+## License
 
 MIT[@elvinzhu](https://github.com/elvinzhu)
