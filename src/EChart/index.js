@@ -1,7 +1,6 @@
 import Taro, { Component } from '@tarojs/taro';
 import { Canvas } from '@tarojs/components';
 import WxCanvas from './wx-canvas';
-import './index.less';
 
 let INSTANCE_COUNTER = 0;
 export default class EChart extends Component {
@@ -35,9 +34,20 @@ export default class EChart extends Component {
   }
 
   render() {
-    const { disableTouch, style } = this.props;
+    const { disableTouch, style, forceUseOldCanvas } = this.props;
     const canvasId = this.getCanvasId();
-    return <Canvas type="2d" className="techarts-canvas" id={canvasId} canvasId={canvasId} style={style} onTouchStart={disableTouch ? '' : this._touchStart} onTouchMove={disableTouch ? '' : this._touchMove} onTouchEnd={disableTouch ? '' : this._touchEnd}></Canvas>;
+    return (
+      <Canvas
+        id={canvasId}
+        canvasId={canvasId}
+        type={forceUseOldCanvas ? undefined : '2d'}
+        className="techarts-canvas"
+        style={{ width: '100%', height: '100%', display: 'inline-block', ...style }}
+        onTouchStart={disableTouch ? undefined : this._touchStart}
+        onTouchMove={disableTouch ? undefined : this._touchMove}
+        onTouchEnd={disableTouch ? undefined : this._touchEnd}
+      ></Canvas>
+    );
   }
 
   setOption(option) {
@@ -50,7 +60,7 @@ export default class EChart extends Component {
     return this.props.canvasId || this.canvasId;
   }
 
-  init = (callback) => {
+  init(callback) {
     if (!this.echarts) {
       console.error('[EChart]：组件需要echarts对象才能绘图，建议去官网自定义构建。' + '注意不要勾选“代码压缩”，可下载后自行压缩。https://www.echartsjs.com/zh/builder.html');
       return;
@@ -59,7 +69,7 @@ export default class EChart extends Component {
     if (process.env.TARO_ENV === 'h5') {
       const elCanvas = window.document.getElementById(this.getCanvasId());
       const style = window.getComputedStyle(elCanvas);
-      this._invokeCallback(callback, elCanvas, parseInt(style.width), parseInt(style.height), window.devicePixelRatio);
+      this._invokeCallback(elCanvas, parseInt(style.width), parseInt(style.height), window.devicePixelRatio, callback);
     } else {
       const version = Taro.getSystemInfoSync().SDKVersion;
       const canUseNewCanvas = compareVersion(version, '2.9.0') >= 0;
@@ -85,14 +95,19 @@ export default class EChart extends Component {
         }
       }
     }
-  };
+  }
 
-  _invokeCallback(callback, canvas, canvasWidth, canvasHeight, canvasDpr) {
+  _invokeCallback(canvas, canvasWidth, canvasHeight, canvasDpr, callback) {
     if (typeof callback === 'function') {
       this.chart = callback(canvas, canvasWidth, canvasHeight, canvasDpr);
     } else {
       this.chart = this._initChart(canvas, canvasWidth, canvasHeight, canvasDpr);
     }
+  }
+
+  _selectCanvas() {
+    const query = Taro.createSelectorQuery().in(this.$scope);
+    return query.select(`#${this.getCanvasId()}`);
   }
 
   _initByOldWay(callback) {
@@ -101,18 +116,19 @@ export default class EChart extends Component {
       const canvasId = this.getCanvasId();
       const ctx = Taro.createCanvasContext(canvasId, this.$scope);
       this.ctx = ctx;
-      const canvas = new WxCanvas(ctx, canvasId, false);
+      const canvas = new WxCanvas(ctx, false);
 
       this.echarts.setCanvasCreator(() => {
         return canvas;
       });
-      // const canvasDpr = Taro.getSystemInfoSync().pixelRatio // 微信旧的canvas不能传入dpr
-      const canvasDpr = 1;
-      var query = Taro.createSelectorQuery().in(this.$scope);
-      query
-        .select('.techarts-canvas')
-        .boundingClientRect((res) => {
-          this._invokeCallback(callback, canvas, res.width, res.height, canvasDpr);
+      // pc微信小程序传入pixelRatio才能正常显示，开发者工具canvasDpr=1
+      let { pixelRatio: canvasDpr, platform } = Taro.getSystemInfoSync();
+      if (platform === 'devtools') {
+        canvasDpr = 1;
+      }
+      this._selectCanvas()
+        .boundingClientRect(res => {
+          this._invokeCallback(canvas, res.width, res.height, canvasDpr, callback);
         })
         .exec();
     }
@@ -121,60 +137,53 @@ export default class EChart extends Component {
   _initByNewWay(callback) {
     if (process.env.TARO_ENV !== 'h5') {
       // version >= 2.9.0：使用新的方式初始化
-      const canvasId = this.getCanvasId();
-      const query = Taro.createSelectorQuery().in(this.$scope);
-      query
-        .select('.techarts-canvas')
+      this._selectCanvas()
         .fields({ node: true, size: true })
-        .exec((res) => {
+        .exec(res => {
           const canvasNode = res[0].node;
-          this.canvasNode = canvasNode;
-
           const canvasDpr = Taro.getSystemInfoSync().pixelRatio;
           const canvasWidth = res[0].width;
           const canvasHeight = res[0].height;
 
           const ctx = canvasNode.getContext('2d');
 
-          const canvas = new WxCanvas(ctx, canvasId, true, canvasNode);
+          const canvas = new WxCanvas(ctx, true, canvasNode);
           this.echarts.setCanvasCreator(() => {
             return canvas;
           });
-          this._invokeCallback(callback, canvas, canvasWidth, canvasHeight, canvasDpr);
+          this._invokeCallback(canvas, canvasWidth, canvasHeight, canvasDpr, callback);
         });
     }
   }
 
-  canvasToTempFilePath(opt) {
-    opt = opt || {};
-    if (!opt.canvasId) {
-      opt.canvasId = this.getCanvasId();
+  canvasToTempFilePath(option) {
+    option = option || {};
+    if (!option.canvasId) {
+      option.canvasId = this.getCanvasId();
     }
     if (process.env.TARO_ENV === 'h5') {
-      canvasToTempFilePath(opt, this);
-      // Taro.canvasToTempFilePath(opt, this);
+      canvasToTempFilePath(option);
+      // Taro.canvasToTempFilePath(option as Taro.canvasToTempFilePath.Option);
     } else {
       if (this.state.isUseNewCanvas) {
         // 新版
-        const query = Taro.createSelectorQuery().in(this.$scope);
-        query
-          .select('.techarts-canvas')
+        this._selectCanvas()
           .fields({ node: true, size: true })
-          .exec((res) => {
+          .exec(res => {
             const canvasNode = res[0].node;
-            opt.canvas = canvasNode;
-            Taro.canvasToTempFilePath(opt, this.$scope);
+            option.canvas = canvasNode;
+            Taro.canvasToTempFilePath(option);
           });
       } else {
         // 旧的
         this.ctx.draw(true, () => {
-          Taro.canvasToTempFilePath(opt, this.$scope);
+          Taro.canvasToTempFilePath(option, this.$scope);
         });
       }
     }
   }
 
-  _touchStart = (e) => {
+  _touchStart = e => {
     if (this.chart && e.touches.length > 0) {
       var touch = e.touches[0];
       var handler = this.chart.getZr().handler;
@@ -190,7 +199,7 @@ export default class EChart extends Component {
     }
   };
 
-  _touchMove = (e) => {
+  _touchMove = e => {
     if (this.chart && e.touches.length > 0) {
       var touch = e.touches[0];
       var handler = this.chart.getZr().handler;
@@ -202,7 +211,7 @@ export default class EChart extends Component {
     }
   };
 
-  _touchEnd = (e) => {
+  _touchEnd = e => {
     if (this.chart) {
       const touch = e.changedTouches ? e.changedTouches[0] : {};
       var handler = this.chart.getZr().handler;
@@ -219,44 +228,41 @@ export default class EChart extends Component {
   };
 
   _initChart(canvas, width, height, dpr) {
-    const { onInit } = this.props;
-    if (!canvas.setChart) {
-      canvas.setChart = () => {};
-    }
+    const { onInit, option } = this.props;
     if (typeof onInit === 'function') {
       this.chart = onInit(canvas, width, height, dpr);
     } else {
-      const chart = this.echarts.init(canvas, null, {
+      this.chart = this.echarts.init(canvas, null, {
         width: width,
         height: height,
         devicePixelRatio: dpr, // new
       });
-      canvas.setChart(chart);
-      if (this.props.option) {
-        chart.setOption(this.props.option);
-      }
-      this.chart = chart;
+    }
+    if (canvas.setChart) {
+      canvas.setChart(this.chart);
+    }
+    if (option) {
+      this.chart.setOption(option);
     }
     return this.chart;
   }
 }
 
 function compareVersion(v1, v2) {
-  v1 = v1.split('.');
-  v2 = v2.split('.');
-  const len = Math.max(v1.length, v2.length);
+  const v1Arr = v1.split('.');
+  const v2Arr = v2.split('.');
+  const len = Math.max(v1Arr.length, v2Arr.length);
 
-  while (v1.length < len) {
-    v1.push('0');
+  while (v1Arr.length < len) {
+    v1Arr.push('0');
   }
-  while (v2.length < len) {
-    v2.push('0');
+  while (v2Arr.length < len) {
+    v2Arr.push('0');
   }
 
   for (let i = 0; i < len; i++) {
-    const num1 = parseInt(v1[i]);
-    const num2 = parseInt(v2[i]);
-
+    const num1 = parseInt(v1Arr[i]);
+    const num2 = parseInt(v2Arr[i]);
     if (num1 > num2) {
       return 1;
     } else if (num1 < num2) {
@@ -275,13 +281,13 @@ function wrapTouch(event) {
   return event;
 }
 
-function canvasToTempFilePath({ canvasId, fileType, quality, success, fail, complete }, componentInstance) {
+function canvasToTempFilePath({ canvasId, fileType, quality, success, fail, complete }) {
   try {
-    const canvas = componentInstance.vnode.dom.querySelector('canvas');
+    const canvas = document.getElementById(canvasId).querySelector('canvas');
     const dataURL = canvas.toDataURL(`image/${fileType || 'png'}`, quality);
     const res = {
       tempFilePath: dataURL,
-      res: 'canvasToTempFilePath:ok',
+      errMsg: 'canvasToTempFilePath:ok',
     };
     success && success(res);
     complete && complete();
