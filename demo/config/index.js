@@ -34,7 +34,7 @@ const config = {
       ],
     ],
   },
-  plugins: [],
+  plugins: ['@tarojs/plugin-less'],
   defineConstants: {},
   mini: {
     postcss: {
