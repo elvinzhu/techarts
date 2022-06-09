@@ -11,7 +11,8 @@
 ## 安装
 
 ```javascript
-npm install techarts
+npm install techarts@^3.0.7
+
 ```
 
 ## 使用
